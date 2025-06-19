@@ -6,7 +6,8 @@ import shutil
 import os
 import uuid
 from docx import Document
-import subprocess
+import whisperx
+import torch
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -33,7 +34,7 @@ async def transcribe_audio(request: Request, file: UploadFile, model_size: str =
     doc.save(word_filename)
 
     pdf_filename = word_filename.replace(".docx", ".pdf")
-    subprocess.run(["weasyprint", word_filename, pdf_filename])
+    os.system(f"weasyprint {word_filename} {pdf_filename}")
 
     os.remove(temp_filename)
 
@@ -45,16 +46,8 @@ async def transcribe_audio(request: Request, file: UploadFile, model_size: str =
     })
 
 async def run_whisperx(filepath, model_size):
-    command = [
-        "whisperx", filepath,
-        "--model", model_size,
-        "--output_format", "txt",
-        "--output_dir", OUTPUT_DIR
-    ]
-    subprocess.run(command, check=True)
-
-    output_txt = [f for f in os.listdir(OUTPUT_DIR) if f.endswith(".txt")][-1]
-    with open(os.path.join(OUTPUT_DIR, output_txt), "r", encoding="utf-8") as f:
-        text = f.read()
-
-    return text
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model = whisperx.load_model(model_size, device)
+    audio = whisperx.load_audio(filepath)
+    result = model.transcribe(audio)
+    return result["text"]

@@ -1,6 +1,8 @@
 fastapi
 uvicorn
 jinja2
+python-multipart
 python-docx
 weasyprint
-python-multipart
+torch
+whisperx @ git+https://github.com/m-bain/whisperX.git
