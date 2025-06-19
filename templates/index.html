@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Transcriptor WhisperX</title>
+    <script>
+        function copyText() {
+            const text = document.getElementById("resultText").innerText;
+            navigator.clipboard.writeText(text);
+            alert("¡Texto copiado al portapapeles!");
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">🎧 Transcriptor con WhisperX</h1>
+        <form action="/transcribe" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div>
+                <label class="block mb-1 font-medium">Subir archivo de audio:</label>
+                <input type="file" name="file" accept=".mp3,.wav,.m4a,.flac,.ogg" required class="w-full border p-2">
+            </div>
+            <div>
+                <label class="block mb-1 font-medium">Modelo:</label>
+                <select name="model_size" class="w-full border p-2">
+                    <option value="tiny">tiny</option>
+                    <option value="base">base</option>
+                    <option value="small">small</option>
+                    <option value="medium">medium</option>
+                    <option value="large">large</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Transcribir</button>
+        </form>
+
+        {% if text %}
+        <div class="mt-6">
+            <h2 class="text-xl font-bold mb-2">Resultado:</h2>
+            <pre id="resultText" class="bg-gray-100 p-2 border">{{ text }}</pre>
+            <div class="mt-2 space-x-2">
+                <button onclick="copyText()" class="bg-green-500 text-white px-3 py-1 rounded">Copiar texto</button>
+                <a href="{{ word_file }}" class="bg-purple-500 text-white px-3 py-1 rounded">Descargar Word</a>
+                <a href="{{ pdf_file }}" class="bg-red-500 text-white px-3 py-1 rounded">Descargar PDF</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
